@@ -211,7 +211,7 @@ const BookingCar = () => {
               <p className="text-xl font-semibold mb-4">Total Amount: ₹{amount}</p>
               <button
                 onClick={handlePayment}
-                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full shadow-md transition transform hover:scale-105"
+                 class="btn btn-dark"
               >
                 Pay with Paystack
               </button>

@@ -19,28 +19,17 @@ const Register = () => {
     try {
       const res = await axios.post("/api/users/signup", form);
       console.log("Success:", res.data);
-      navigate("/login"); // Redirect after successful registration
+      navigate("/login");
     } catch (err) {
       console.error("Register Error:", err.response?.data || err.message);
     }
   };
 
   return (
-    <div className="container-fluid vh-100 d-flex p-0">
-      {/* Left Side Image */}
-      <div className="col-md-7 d-none d-md-block p-0">
-        <img
-          src="https://images.unsplash.com/photo-1617137968427-8590bc2675f2"
-          alt="Car"
-          className="img-fluid h-100 w-100"
-          style={{ objectFit: "cover" }}
-        />
-      </div>
-
-      {/* Right Side Form */}
-      <div className="col-md-5 d-flex align-items-center justify-content-center bg-dark text-light">
-        <div className="p-4" style={{ width: "80%", maxWidth: "400px" }}>
-          <h2 className="text-center mb-4">Register</h2>
+    <div className="login-background d-flex justify-content-center align-items-center vh-100">
+      <div className="card login-card text-light">
+        <div className="card-body">
+          <h3 className="card-title text-center mb-4">Register</h3>
           <form onSubmit={handleRegister}>
             <div className="mb-3">
               <label className="form-label">Username</label>
@@ -86,7 +75,7 @@ const Register = () => {
             </button>
 
             <div className="text-center mt-3">
-              <a href="/login" className="text-decoration-none text-light">
+              <a href="/login" className="text-light text-decoration-none">
                 Already have an account? Login
               </a>
             </div>

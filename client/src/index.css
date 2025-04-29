@@ -7,3 +7,19 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
+  .login-background {
+    background-image: url("https://image.cnbcfm.com/api/v1/image/105807049-1553189463674bugatti.jpg?v=1553189697&w=1600&h=900"); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  
+  .login-card {
+    background-color: rgba(0, 0, 0, 0.75);
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  

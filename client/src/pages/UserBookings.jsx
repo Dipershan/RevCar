@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 
 const UserBookings = () => {
   const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true); // <-- Added loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -15,7 +15,7 @@ const UserBookings = () => {
       } catch (error) {
         console.error('Failed to fetch bookings:', error);
       } finally {
-        setLoading(false); // <-- Always set loading false
+        setLoading(false); 
       }
     };
     fetchBookings();

@@ -4,7 +4,6 @@ import axios from "../api/axiosInstance";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/authSlice";
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,8 +14,20 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post("/api/users/login", { email, password });
+      
+      // Save token and user info in Redux
       dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
-      navigate("/");
+
+      // Also optionally store in localStorage
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("isAdmin", res.data.user.isAdmin);
+
+      // Redirect based on role
+      if (res.data.user.isAdmin) {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       console.error("Login error:", err);
       alert("Login failed!");

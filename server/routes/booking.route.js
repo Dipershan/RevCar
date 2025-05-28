@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const bookingController = require("../controllers/booking.controller");
-const authenticateUser = require("../middlewares/authenticateUser");
+const { authenticateUser } = require("../middlewares/authenticateUser");
 
-// --- Routes ---
 router.post("/bookcar", bookingController.bookCar);
 router.post("/add", authenticateUser, bookingController.addBooking);
 router.get("/user", authenticateUser, bookingController.getUserBookings);

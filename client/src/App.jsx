@@ -8,6 +8,7 @@ import AdminHome from "./pages/admin/AdminHome";
 import EditCar from "./pages/admin/EditCar";
 import AddCar from "./pages/admin/AddCar";
 import PrivateRoute from "./components/PrivateRoute"; 
+import AdminRoute from './components/AdminRoute';
 import AdminLogin from "./pages/admin/AdminHome";  
 import AdminUserList from "./pages/admin/AdminUserList";    
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -16,51 +17,43 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 const App = () => {
   return (
     
-    <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-    
-    <Route
-  path="/"
-  element={
-    <PrivateRoute>
-      <Home />
-    </PrivateRoute>
-  }
-/>
+ <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-    <Route path="/booking/:carid" element={<BookingCar />} />
-    <Route path="/userbookings" element={<UserBookings />} />
-    
-    <Route path="/adminlogin" element={<AdminLogin />} />
-  
-  
-    <Route
-  path="/admin"
-  element={
-    
-      <AdminHome />
-    
-  }
-/>
-    <Route
-      path="/admin/editcar/:carid"
-      element={
-        
+      <Route path="/" element={
+        <PrivateRoute>
+          <Home />
+        </PrivateRoute>
+      } />
+
+      <Route path="/booking/:carid" element={<BookingCar />} />
+      <Route path="/userbookings" element={<UserBookings />} />
+
+      <Route path="/adminlogin" element={<AdminLogin />} />
+
+      {/* ✅ Admin Protected Routes */}
+      <Route path="/admin" element={
+        <AdminRoute>
+          <AdminHome />
+        </AdminRoute>
+      } />
+      <Route path="/admin/editcar/:carid" element={
+        <AdminRoute>
           <EditCar />
-        
-      }
-    />
-    <Route
-      path="/admin/addcar"
-      element={
-        
+        </AdminRoute>
+      } />
+      <Route path="/admin/addcar" element={
+        <AdminRoute>
           <AddCar />
-        
-      }
-    />
-    <Route path="/admin/users" element={<AdminUserList />} />
-  </Routes>
+        </AdminRoute>
+      } />
+      <Route path="/admin/users" element={
+        <AdminRoute>
+          <AdminUserList />
+        </AdminRoute>
+      } />
+    </Routes>
   
     
   );

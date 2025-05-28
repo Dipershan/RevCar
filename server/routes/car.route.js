@@ -1,17 +1,18 @@
 const router = require("express").Router();
-const Car = require("../models/car.model");
 const carController = require("../controllers/car.controller");
+const { authenticateUser, requireAdmin } = require("../middlewares/authenticateUser");
 
-router.get("/getallcars", carController.getAllCars);
-router.post("/addcar", carController.addCar);
-router.post("/editcar", carController.editCar);
-router.post("/deletecar", carController.deleteCar);
-router.get("/getcar/:carId", carController.getCarById);
+//authuser
+router.get("/getallcars", authenticateUser, carController.getAllCars);
 
+//admin
+router.post("/addcar", authenticateUser, requireAdmin, carController.addCar);
+router.post("/editcar", authenticateUser, requireAdmin, carController.editCar);
+router.post("/deletecar", authenticateUser, requireAdmin, carController.deleteCar);
 
+router.get("/getcar/:carId", authenticateUser, carController.getCarById);
 
 module.exports = router;
-
 
 // router.get("/getcar/:carId", async (req, res) => {
 //     try {

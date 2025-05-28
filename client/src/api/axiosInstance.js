@@ -1,10 +1,9 @@
-
-
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:7000", 
+  baseURL: "http://localhost:7000",
 });
+
 
 instance.interceptors.request.use(
   (config) => {
@@ -14,7 +13,16 @@ instance.interceptors.request.use(
     }
     return config;
   },
+  (error) => Promise.reject(error)
+);
+
+instance.interceptors.response.use(
+  (response) => response,
   (error) => {
+    if (error.response?.status === 403 || error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login"; 
+    }
     return Promise.reject(error);
   }
 );

@@ -24,7 +24,6 @@ const bookCar = async (data) => {
     const carToUpdate = await Car.findById(car).session(session);
     if (!carToUpdate) throw new Error("Car not found");
 
-    // ✅ Now create the booking with a valid car ID
     const newBooking = new Booking({
       user,
       car,

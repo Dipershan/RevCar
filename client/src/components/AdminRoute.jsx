@@ -1,12 +1,15 @@
 
-import { useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
 const AdminRoute = ({ children }) => {
-  const user = useSelector((state) => state.auth.user);
-  const isAdmin = user?.role === 'admin';
+  const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
-  return isAdmin ? children : <Navigate to="/adminlogin" />;
+  if (!token || !isAdmin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 };
 
 export default AdminRoute;

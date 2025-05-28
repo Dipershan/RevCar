@@ -3,50 +3,60 @@ const bcrypt  = require("bcrypt");
 const jwt = require("jsonwebtoken")
 
 //Register User
-const createUser =  async(body)=>{
-    try {
-        //check if the user already exits or not
-        const findUser =  await User.findOne({email: body.email});
-        if(findUser){
-            throw new Error("User already exist");
-        };
-        const createUser =  await User.create(body);
-        return createUser;
-        
-    } catch (error) {        
-        console.log("Register Error",error);
-        throw error;
-    }
+const createUser = async (body) => {
+  try {
+    const { email, password, username } = body;
+    const findUser = await User.findOne({ email });
+    if (findUser) throw new Error("User already exist");
 
+    const createUser = await User.create({
+      username,
+      email,
+      password,
+      isAdmin: false, 
+    });
+    return createUser;
+  } catch (error) {
+    console.log("Register Error", error);
+    throw error;
+  }
 };
 
 //Login User
 const loginUser = async (email, password) => {
-  try {      
-      const user = await User.findOne({ email: email });
-      if (!user) {
-          throw new Error("Incorrect Email or Password");          
-      }      
-      const isPasswordValid = await user.isPasswordMatch(password);
-      if (!isPasswordValid) {
-          throw new Error("Incorrect Email or Password");
-      }      
-      console.log('User authenticated:', user);
-        
-        const token = jwt.sign(
-          { id: user._id, email: user.email },
-          process.env.JWT_SECRET, 
-          { expiresIn: "1h" } 
-      );
+  try {
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw new Error("Incorrect Email or Password");
+    }
 
-      return { user, token };
-      return user;
+    console.log("User found:", user); // ✅ Log user object
+
+    const isPasswordValid = await user.isPasswordMatch(password);
+    console.log("Password valid:", isPasswordValid); // ✅ Log password match result
+
+    if (!isPasswordValid) {
+      throw new Error("Incorrect Email or Password");
+    }
+
+    console.log("Is Admin:", user.isAdmin); // ✅ Log admin status
+
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        isAdmin: user.isAdmin,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    return { user, token };
   } catch (error) {
-      console.error("Login error:", error.message);
-      throw error;
+    console.error("Login error:", error.message);
+    throw error;
   }
 };
-
 
 //To get all user
 const getAllUsers =  async ()=>{

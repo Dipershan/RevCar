@@ -61,8 +61,8 @@ const loginUser = async (email, password) => {
 //To get all user
 const getAllUsers =  async ()=>{
     try {
-        const user  =  User.find({}, '-password');
-        return  user
+     const users = await User.find({}, '-password');
+    return users;
     } catch (error) {
       console.log(error)  ;
       throw error;

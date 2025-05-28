@@ -1,10 +1,9 @@
 const userService = require("../services/user.service");
 
-//register user
+// Register user
 const register = async (req, res) => {
   try {
     await userService.createUser(req.body);
-
     res.status(201).send({
       message: "User created successfully",
     });
@@ -18,55 +17,54 @@ const register = async (req, res) => {
   }
 };
 
-//login
-const login  = async(req, res) =>{
-    const {email , password} =  req.body;
-    try {
-      const { user, token } = await userService.loginUser(email, password); 
-
-      res.status(200).send({
-          message: "Login Successful",
-          user: { id: user._id, email: user.email },
-          token,
-      });
-    } catch (error) {
-        console.log(error);
-        res
-        .status(401)
-        .json({message : "Unable to Login"});
-    }
-};
-
-//listUsers
-const listUsers = async (req, res) => {
+// Login
+const login = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const users = await userService.getAllUsers();
+    const { user, token } = await userService.loginUser(email, password);
 
-    res.json({ message: "Users retrieved successfully!", users });
+    res.status(200).send({
+      message: "Login Successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        isAdmin: user.isAdmin, // ✅ added here
+      },
+      token,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: error.message || "An error occurred while retrieving users" });
+    console.log(error);
+    res.status(401).json({ message: "Unable to Login" });
   }
 };
 
-//resetUserPassword
+// List all users (admin only)
+const listUsers = async (req, res) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.json({ message: "Users retrieved successfully!", users });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "An error occurred while retrieving users",
+    });
+  }
+};
+
+// Reset password
 const resetUserPassword = async (req, res) => {
-    const { email, password } = req.body;
-  
-    try {
-      await userService.resetUserPassword(email, password);
-  
-      res.json({ message: "Password reset successful!" });
-    } catch (error) {
-      res
-        .status(401)
-        .json({ message: error.message || "An error occurred during password reset" });
-    }
-  };
- 
-  
-//Delete User
+  const { email, password } = req.body;
+
+  try {
+    await userService.resetUserPassword(email, password);
+    res.json({ message: "Password reset successful!" });
+  } catch (error) {
+    res
+      .status(401)
+      .json({ message: error.message || "An error occurred during password reset" });
+  }
+};
+
+// Delete user
 const deleteUser = async (req, res) => {
   const { userId } = req.params;
   console.log("Attempting to delete user with ID:", userId);
@@ -75,20 +73,16 @@ const deleteUser = async (req, res) => {
     await userService.deleteUser(userId);
     res.json({ message: "User deleted successfully!" });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: error.message || "An error occurred while deleting the user" });
+    res.status(500).json({
+      message: error.message || "An error occurred while deleting the user",
+    });
   }
 };
 
-  
-
-
 module.exports = {
-    register,
-    login,
-    resetUserPassword,
-    deleteUser,
-    listUsers
-    
-}
+  register,
+  login,
+  resetUserPassword,
+  deleteUser,
+  listUsers,
+};

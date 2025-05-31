@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../components/AdminLayout';
+import axios from 'axios';
+
 
 const AddCar = () => {
   const [car, setCar] = useState({
@@ -33,10 +35,22 @@ const AddCar = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(car);
-    // send to backend here
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('/api/cars/addcar', car, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      alert('Car added successfully!');
+      navigate('/admin');
+    } catch (error) {
+      console.error('Failed to add car:', error);
+      alert('Failed to add car');
+    }
   };
 
   return (

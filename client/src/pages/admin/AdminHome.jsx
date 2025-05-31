@@ -6,24 +6,31 @@ import AdminLayout from '../../components/AdminLayout';
 const AdminHome = () => {
   const [cars, setCars] = useState([]);
 
-  useEffect(() => {
-    const fetchCars = async () => {
-      try {
-        const response = await axios.get('/api/cars/getallcars');
-        if (Array.isArray(response.data)) {
-          setCars(response.data);
-        } else if (Array.isArray(response.data.cars)) {
-          setCars(response.data.cars);
-        } else {
-          console.error('Unexpected response:', response.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch cars:', error);
-      }
-    };
+ useEffect(() => {
+  const fetchCars = async () => {
+    try {
+      const token = localStorage.getItem('token');
 
-    fetchCars();
-  }, []);
+      const response = await axios.get('/api/cars/getallcars', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (Array.isArray(response.data)) {
+        setCars(response.data);
+      } else if (Array.isArray(response.data.cars)) {
+        setCars(response.data.cars);
+      } else {
+        console.error('Unexpected response:', response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch cars:', error);
+    }
+  };
+
+  fetchCars();
+}, []);
 
   return (
     <AdminLayout>

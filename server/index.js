@@ -18,11 +18,15 @@ mongoose.connect(
 });
 
 app.use(express.json());
+// app.use(cors({
+//     origin: "http://localhost:5173", 
+//     credentials: true
+//   }));
 app.use(cors({
-    origin: "http://localhost:5173", 
-    credentials: true
-  }));
-  
+  origin: ['http://192.168.1.11:5173'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));  
 app.use("/", indexRouter);
 app.use("/api/sos", sosRoutes);
 
@@ -31,6 +35,6 @@ app.get("/" , (req , res)=>{
     res.json("HelloWorld");
 });
 
-app.listen(PORT , ()=>{
-    console.log(`Application is  runnning on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on port ${PORT}`);
 });

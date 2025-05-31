@@ -15,53 +15,81 @@ const EditCar = () => {
   });
 
   const navigate = useNavigate();
+useEffect(() => {
+  const fetchCar = async () => {
+    try {
+      const token = localStorage.getItem('token'); // ✅ Get token
 
-  useEffect(() => {
-    const fetchCar = async () => {
-      try {
-        const res = await axios.get(`/api/cars/getcar/${carid}`);
-        setCarData({
-          name: res.data.name,
-          image: res.data.image,
-          rentPerHour: res.data.rentPerHour,
-          capacity: res.data.capacity,
-          fuelType: res.data.fuelType,
-          availabilityStatus: res.data.availabilityStatus || 'Available',
-        });
-      } catch (error) {
-        console.error('Failed to load car details:', error);
-      }
-    };
-    fetchCar();
-  }, [carid]);
+      const res = await axios.get(`/api/cars/getcar/${carid}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Include token
+        },
+      });
+
+      setCarData({
+        name: res.data.name,
+        image: res.data.image,
+        rentPerHour: res.data.rentPerHour,
+        capacity: res.data.capacity,
+        fuelType: res.data.fuelType,
+        availabilityStatus: res.data.availabilityStatus || 'Available',
+      });
+    } catch (error) {
+      console.error('Failed to load car details:', error);
+    }
+  };
+
+  fetchCar();
+}, [carid]);
+
 
   const handleChange = (e) => {
     setCarData({ ...carData, [e.target.name]: e.target.value });
   };
-  const handleDelete = async () => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this car?");
-    if (!confirmDelete) return;
-  
-    try {
-      await axios.post(`/api/cars/deletecar`, { _id: carid });
-      alert("Car deleted successfully!");
-      navigate('/admin');
-    } catch (error) {
-      console.error("Failed to delete car:", error);
-      alert("Something went wrong while deleting the car.");
-    }
-  };
-  
+const handleDelete = async () => {
+  try {
+    const token = localStorage.getItem('token');
+
+    const response = await axios.post(
+      '/api/cars/deletecar',
+      { carId: carid }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log('Car deleted:', response.data);
+    navigate('/admin');
+  } catch (error) {
+    console.error('Failed to delete car:', error);
+  }
+};
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`/api/cars/editcar`, { ...carData, _id: carid });
+      const token = localStorage.getItem('token');
+      await axios.post(
+        '/api/cars/editcar',
+        { ...carData, _id: carid },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
       alert('Car updated successfully!');
       navigate('/admin');
     } catch (error) {
       console.error('Failed to update car:', error);
+      alert('Failed to update car');
     }
   };
+  ;
 
   return (
     <AdminLayout>

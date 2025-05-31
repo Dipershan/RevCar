@@ -1,11 +1,10 @@
-// AdminLayout.jsx
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function AdminLayout({ children }) {
   const navigate = useNavigate();
+
   const handleLogout = () => {
-    // clear admin session and redirect to login
     localStorage.removeItem('adminData');
     navigate('/login');
   };
@@ -31,14 +30,19 @@ export default function AdminLayout({ children }) {
           </button>
           <div className="collapse navbar-collapse" id="adminNavbar">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <NavLink className="nav-link" to="/admin">
                   Manage Cars
                 </NavLink>
-              </li> */}
+              </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/admin/addcar">
                   Add Car
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/admin/users">
+                  Manage Users
                 </NavLink>
               </li>
             </ul>

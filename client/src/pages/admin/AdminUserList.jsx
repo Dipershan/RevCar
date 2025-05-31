@@ -9,7 +9,12 @@ const AdminUserList = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('/api/users/listUsers');
+      const token = localStorage.getItem('token');
+      const res = await axios.get('/api/users/listUsers', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUsers(res.data.users);
       setLoading(false);
     } catch (err) {
@@ -18,16 +23,24 @@ const AdminUserList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
 
+  const handleDelete = async (userId) => {
     try {
-      await axios.delete(`/api/users/delete/${id}`);
-      setUsers(users.filter((user) => user._id !== id));
-    } catch (err) {
-      alert('Failed to delete user');
+      const token = localStorage.getItem('token'); // ✅ Get admin token
+
+      const res = await axios.delete(`/api/users/delete/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Attach the token
+        },
+      });
+
+      console.log('User deleted:', res.data);
+      // optionally refresh list or remove from state
+    } catch (error) {
+      console.error('Failed to delete user:', error);
     }
   };
+
 
   useEffect(() => {
     fetchUsers();

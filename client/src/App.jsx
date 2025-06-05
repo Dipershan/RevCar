@@ -11,8 +11,12 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from './components/AdminRoute';
 import AdminLogin from "./pages/admin/AdminHome";  
 import AdminUserList from "./pages/admin/AdminUserList";    
+import Blog from "./pages/Blog";
+import Contact from "./pages/Contact";
+import Cars from "./pages/Cars";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 const App = () => {
   return (
@@ -20,6 +24,9 @@ const App = () => {
  <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/cars" element={<Cars />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/contact" element={<Contact />} />
 
       <Route path="/" element={
         <PrivateRoute>

@@ -18,16 +18,19 @@ const SOSButton = () => {
     dispatch(sendSOSAlert(emergencyData));
   };
 
+  const handleIssueChange = (event) => {
+    setSelectedIssue(event.target.value);
+  };
+
   return (
     <div className="d-flex flex-column gap-3" style={{ maxWidth: '300px' }}>
-        <select
+      <select
         className="form-select"
         style={{ width: '100%' }}
         value={selectedIssue}
-        onChange={setSelectedIssue}
+        onChange={handleIssueChange}
         disabled={loading}
-        >
-
+      >
         <option value="Vehicle breakdown">🚗 Vehicle Breakdown</option>
         <option value="Accident">💥 Accident</option>
         <option value="Medical">🩺 Medical Emergency</option>

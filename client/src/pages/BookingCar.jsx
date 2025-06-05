@@ -77,21 +77,24 @@ const BookingCar = () => {
       const totalHours = (end - start) / (1000 * 60 * 60);
       
       const bookingData = {
-        userId: user._id || user.id,
-        carId: car._id,
-        fromTime: fullFromTime,
-        toTime: fullToTime,
+        user: user._id || user.id,
+        car: car._id,
+        bookedTimeSlots: {
+          from: fullFromTime,
+          to: fullToTime
+        },
         totalHours,
-        transactionId: response.reference,
         totalAmount: amount,
+        transactionId: response.reference,
         driverRequired,
+        status: "Confirmed"
       };
       
       console.log("Booking data sending to backend:", bookingData);
       
       await axios.post("/api/bookings/add", bookingData);
       alert("Booking successful!");
-      navigate("/");
+      navigate("/userbookings");
     } catch (error) {
       console.error("Booking failed:", error.response?.data || error.message);
       alert("Booking failed after payment.");

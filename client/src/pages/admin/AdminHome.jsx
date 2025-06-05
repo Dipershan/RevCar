@@ -1,44 +1,88 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
+import { Link, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
 
 const AdminHome = () => {
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
- useEffect(() => {
-  const fetchCars = async () => {
-    try {
-      const token = localStorage.getItem('token');
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        // Check if user is admin
+        const isAdmin = localStorage.getItem('isAdmin') === 'true';
+        if (!isAdmin) {
+          navigate('/login');
+          return;
+        }
 
-      const response = await axios.get('/api/cars/getallcars', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (Array.isArray(response.data)) {
-        setCars(response.data);
-      } else if (Array.isArray(response.data.cars)) {
-        setCars(response.data.cars);
-      } else {
-        console.error('Unexpected response:', response.data);
+        const response = await axiosInstance.get('/api/cars/getallcars');
+        
+        if (Array.isArray(response.data)) {
+          setCars(response.data);
+        } else if (Array.isArray(response.data.cars)) {
+          setCars(response.data.cars);
+        } else {
+          setError('Unexpected response format from server');
+        }
+      } catch (error) {
+        console.error('Failed to fetch cars:', error);
+        if (error.response?.status === 403) {
+          setError('Access denied. Please make sure you are logged in as an admin.');
+          navigate('/login');
+        } else {
+          setError('Failed to fetch cars. Please try again later.');
+        }
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to fetch cars:', error);
-    }
-  };
+    };
 
-  fetchCars();
-}, []);
+    fetchCars();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="d-flex justify-content-center py-5">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout>
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
       <div className="container py-4">
-        <h1 className="mb-4 text-center display-4 fw-bold">Manage Cars</h1>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1 className="display-4 fw-bold">Manage Cars</h1>
+          <Link to="/admin/addcar" className="btn btn-primary">
+            Add New Car
+          </Link>
+        </div>
 
         {cars.length === 0 ? (
-          <p className="text-center">No cars found.</p>
+          <div className="text-center py-5">
+            <p className="lead">No cars found.</p>
+            <Link to="/admin/addcar" className="btn btn-primary">
+              Add Your First Car
+            </Link>
+          </div>
         ) : (
           <div className="row">
             {cars.map((car) => (

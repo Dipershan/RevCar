@@ -1,72 +1,63 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import { sendSOSAlert } from '../redux/sosSlice';
 
-const SOSButton = () => {
+const SOSModal = ({ show, handleClose }) => {
   const dispatch = useDispatch();
   const { loading, message, error } = useSelector((state) => state.sos);
   const user = useSelector((state) => state.auth.user);
 
-  const [selectedIssue, setSelectedIssue] = useState('Vehicle breakdown');
+  const [selectedIssue, setSelectedIssue] = React.useState('Vehicle breakdown');
 
   const handleSOS = () => {
     const emergencyData = {
       userId: user?._id || 'guest',
       issue: selectedIssue,
-      location: 'Unknown',
+      location: 'Unknown', // In a real app, you'd get this from navigator.geolocation
     };
     dispatch(sendSOSAlert(emergencyData));
   };
 
-  const handleIssueChange = (event) => {
-    setSelectedIssue(event.target.value);
-  };
-
   return (
-    <div className="d-flex flex-column gap-3" style={{ maxWidth: '300px' }}>
-      <select
-        className="form-select"
-        style={{ width: '100%' }}
-        value={selectedIssue}
-        onChange={handleIssueChange}
-        disabled={loading}
-      >
-        <option value="Vehicle breakdown">🚗 Vehicle Breakdown</option>
-        <option value="Accident">💥 Accident</option>
-        <option value="Medical">🩺 Medical Emergency</option>
-        <option value="Fire">🔥 Fire</option>
-      </select>
-
-      <button
-        onClick={handleSOS}
-        disabled={loading}
-        className="btn btn-danger"
-        style={{ opacity: loading ? 0.6 : 1 }}
-      >
-        🚨 SOS Emergency
-      </button>
-
-      {loading && (
-        <div className="text-center">
-          <div className="spinner-border text-danger" role="status">
-            <span className="visually-hidden">Loading...</span>
+    <Modal show={show} onHide={handleClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>🚨 Emergency Help</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Group className="mb-3">
+          <Form.Label>What is the emergency?</Form.Label>
+          <Form.Select
+            value={selectedIssue}
+            onChange={(e) => setSelectedIssue(e.target.value)}
+            disabled={loading}
+          >
+            <option value="Vehicle breakdown">🚗 Vehicle Breakdown</option>
+            <option value="Accident">💥 Accident</option>
+            <option value="Medical">🩺 Medical Emergency</option>
+            <option value="Fire">🔥 Fire</option>
+          </Form.Select>
+        </Form.Group>
+        
+        {loading && (
+          <div className="text-center">
+            <Spinner animation="border" variant="danger" />
           </div>
-        </div>
-      )}
+        )}
 
-      {message && (
-        <div className="alert alert-success" role="alert">
-          {message}
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
-    </div>
+        {message && <Alert variant="success">{message}</Alert>}
+        {error && <Alert variant="danger">{error}</Alert>}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose} disabled={loading}>
+          Close
+        </Button>
+        <Button variant="danger" onClick={handleSOS} disabled={loading}>
+          Send SOS Alert
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
-export default SOSButton;
+export default SOSModal;

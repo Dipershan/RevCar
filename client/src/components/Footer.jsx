@@ -62,18 +62,18 @@ const Footer = () => {
             <div className="col-lg-3 col-md-6">
               <h5 className="mb-4 text-white">Follow Us</h5>
               <div className="d-flex gap-3">
-                <a href="#" className="text-white fs-5"><i className="bi bi-facebook"></i></a>
-                <a href="#" className="text-white fs-5"><i className="bi bi-instagram"></i></a>
-                <a href="#" className="text-white fs-5"><i className="bi bi-linkedin"></i></a>
-                <a href="#" className="text-white fs-5"><i className="bi bi-youtube"></i></a>
+                <a href="https://facebook.com/revcar" target="_blank" rel="noopener noreferrer" className="text-white fs-5"><i className="bi bi-facebook"></i></a>
+                <a href="https://instagram.com/revcar" target="_blank" rel="noopener noreferrer" className="text-white fs-5"><i className="bi bi-instagram"></i></a>
+                <a href="https://linkedin.com/company/revcar" target="_blank" rel="noopener noreferrer" className="text-white fs-5"><i className="bi bi-linkedin"></i></a>
+                <a href="https://youtube.com/revcar" target="_blank" rel="noopener noreferrer" className="text-white fs-5"><i className="bi bi-youtube"></i></a>
               </div>
               <div className="mt-4">
                 <h6 className="text-white mb-3">Download Our App</h6>
                 <div className="d-flex gap-2">
-                  <a href="#" className="btn btn-light btn-sm">
+                  <a href="https://apps.apple.com/app/revcar" target="_blank" rel="noopener noreferrer" className="btn btn-light btn-sm">
                     <i className="bi bi-apple me-2"></i>App Store
                   </a>
-                  <a href="#" className="btn btn-light btn-sm">
+                  <a href="https://play.google.com/store/apps/details?id=com.revcar" target="_blank" rel="noopener noreferrer" className="btn btn-light btn-sm">
                     <i className="bi bi-google-play me-2"></i>Play Store
                   </a>
                 </div>

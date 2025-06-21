@@ -1,69 +1,55 @@
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import BookingCar from "./pages/BookingCar";
-import UserBookings from "./pages/UserBookings";
-import AdminHome from "./pages/admin/AdminHome";
-import EditCar from "./pages/admin/EditCar";
-import AddCar from "./pages/admin/AddCar";
-import PrivateRoute from "./components/PrivateRoute"; 
-import AdminRoute from './components/AdminRoute';
-import AdminLogin from "./pages/admin/AdminHome";  
-import AdminUserList from "./pages/admin/AdminUserList";    
-import Blog from "./pages/Blog";
-import Contact from "./pages/Contact";
-import Cars from "./pages/Cars";
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap';
+import Home from './pages/Home';
+import Cars from './pages/Cars';
+import MyBookings from './components/MyBookings';
+import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import SOSModal from './components/SOSButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
-import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const App = () => {
+function App() {
+  const [showSosModal, setShowSosModal] = useState(false);
+
   return (
-    
- <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/cars" element={<Cars />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/contact" element={<Contact />} />
+    <Router>
+      <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
+        <Container>
+          <Navbar.Brand as={Link} to="/">RevCar</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link as={Link} to="/">Home</Nav.Link>
+              <Nav.Link as={Link} to="/cars">Cars</Nav.Link>
+              <Nav.Link as={Link} to="/bookings">My Bookings</Nav.Link>
+              <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
+            </Nav>
+            <Nav>
+              <Button variant="danger" onClick={() => setShowSosModal(true)} className="me-2">
+                SOS
+              </Button>
+              <Nav.Link as={Link} to="/login">Login</Nav.Link>
+              <Nav.Link as={Link} to="/register">Register</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      
+      <SOSModal show={showSosModal} handleClose={() => setShowSosModal(false)} />
 
-      <Route path="/" element={
-        <PrivateRoute>
-          <Home />
-        </PrivateRoute>
-      } />
-
-      <Route path="/booking/:carid" element={<BookingCar />} />
-      <Route path="/userbookings" element={<UserBookings />} />
-
-      <Route path="/adminlogin" element={<AdminLogin />} />
-
-      {/* ✅ Admin Protected Routes */}
-      <Route path="/admin" element={
-        <AdminRoute>
-          <AdminHome />
-        </AdminRoute>
-      } />
-      <Route path="/admin/editcar/:carid" element={
-        <AdminRoute>
-          <EditCar />
-        </AdminRoute>
-      } />
-      <Route path="/admin/addcar" element={
-        <AdminRoute>
-          <AddCar />
-        </AdminRoute>
-      } />
-      <Route path="/admin/users" element={
-        <AdminRoute>
-          <AdminUserList />
-        </AdminRoute>
-      } />
-    </Routes>
-  
-    
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/cars" element={<Cars />} />
+        <Route path="/bookings" element={<MyBookings />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;

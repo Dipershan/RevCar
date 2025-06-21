@@ -1,13 +1,27 @@
 require("dotenv").config();
 const express =  require("express");
-const app = express();
 const mongoose = require("mongoose");
-const PORT = process.env.PORT
-const indexRouter =  require("./routes/index");
-const sosRoutes = require("./routes/sos.route");
-const carRoutes = require("./routes/car.route");
+const cors = require('cors');
+const morgan = require('morgan');
 
-const cors =  require("cors");
+// Import routes
+const vehicleRoutes = require('./routes/vehicleRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
+const carRoutes = require('./routes/car.route');
+const userRoutes = require('./routes/user.route');
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(morgan('dev'));
+
+// Routes
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/cars', carRoutes);
+app.use('/api/users', userRoutes);
 
 mongoose.connect(
     process.env.DB_URL 
@@ -18,24 +32,18 @@ mongoose.connect(
     console.log("Database Error" ,  e);
 });
 
-app.use(express.json());
-app.use(cors({
-    origin: "http://localhost:5173", 
-    credentials: true
-  }));
-// app.use(cors({
-//   origin: ['http://localhost:5173', 'http://192.168.1.8:5173'],
-//   credentials: true,
-// })); 
-app.use("/", indexRouter);
-app.use("/api/sos", sosRoutes);
-app.use("/api/cars", carRoutes);
-
- 
 app.get("/" , (req , res)=>{
     res.json("HelloWorld");
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });

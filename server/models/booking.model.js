@@ -1,39 +1,66 @@
-const mongoose =  require("mongoose");
+const mongoose = require('mongoose');
 
-const BookingSchema = new mongoose.Schema({
+const bookingSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  vehicle: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle',
+    required: true,
+  },
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  endDate: {
+    type: Date,
+    required: true,
+  },
+  pickupLocation: {
+    type: String,
+    required: true,
+  },
+  dropoffLocation: {
+    type: String,
+    required: true,
+  },
+  totalCost: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'ongoing', 'completed', 'cancelled'],
+    default: 'pending',
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'refunded'],
+    default: 'pending',
+  },
+  paymentDetails: {
+    method: String,
+    transactionId: String,
+    paidAmount: Number,
+    paidAt: Date
+  },
+  additionalServices: [{
+    type: String,
+    enum: ['insurance', 'gps', 'childSeat', 'additionalDriver']
+  }],
+  bookingNotes: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  }
+});
 
-    car:{
-        type: mongoose.Schema.Types.ObjectId , 
-        ref: 'Car'        
-    },
-    user : {
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User'
-    },  
-     bookedTimeSlots : 
-        {
-        from:{type: String },
-        to :{type:String }
-        },
-    totalHours : {type: Number},
-    totalAmount: {
-        type:Number,
-    },
-    transactionId : {
-        type: String,
-        unique: true
-    },
-    status:{
-        type: String,
-        enum :["Pending", "Confirmed","Cancelled"],
-        default: "Pending"
-    }
-},{timestamps: true });
+// Add indexes for common queries
+bookingSchema.index({ user: 1, status: 1 });
+bookingSchema.index({ vehicle: 1, startDate: 1, endDate: 1 });
 
-// BookingSchema.index({ car: 1 });
-// BookingSchema.index({ user: 1 });
-// BookingSchema.index({ status: 1 });
-
-module.exports = mongoose.model("Booking" , BookingSchema);
-
- 
+const Booking = mongoose.model('Booking', bookingSchema);
+module.exports = Booking; 

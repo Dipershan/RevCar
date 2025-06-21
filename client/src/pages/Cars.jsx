@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const Cars = () => {
@@ -37,8 +36,8 @@ const Cars = () => {
   };
 
   const filteredCars = cars.filter(car => {
-    const matchesSearch = car.name.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesType = filters.type === 'all' || car.type === filters.type;
+    const matchesSearch = car.name ? car.name.toLowerCase().includes(filters.search.toLowerCase()) : true;
+    const matchesType = filters.type === 'all' || (car.type ? car.type === filters.type : true);
     const matchesPriceRange = filters.priceRange === 'all' || 
       (filters.priceRange === 'low' && car.rentPerHour <= 1000) ||
       (filters.priceRange === 'medium' && car.rentPerHour > 1000 && car.rentPerHour <= 2000) ||
@@ -49,8 +48,6 @@ const Cars = () => {
 
   return (
     <>
-      <Header />
-
       {/* Hero Section */}
       <div className="py-5 text-center" style={{
         background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',

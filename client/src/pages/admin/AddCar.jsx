@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/AdminLayout';
-import axios from 'axios';
-
+import axios from '../../api/axiosInstance';
 
 const AddCar = () => {
+  const navigate = useNavigate();
   const [car, setCar] = useState({
     name: '',
     image: '',

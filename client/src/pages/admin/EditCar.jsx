@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../../api/axiosInstance';
 import AdminLayout from '../../components/AdminLayout'; // Optional if you're using a layout wrapper
 
 const EditCar = () => {

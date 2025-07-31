@@ -11,6 +11,7 @@ const Cars = () => {
     type: 'all',
     priceRange: 'all'
   });
+  const [error, setError] = useState(null); // Error state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,9 +21,12 @@ const Cars = () => {
   const fetchCars = async () => {
     try {
       const { data } = await axios.get('/api/cars/getallcars');
-      setCars(data);
+      // Defensive: ensure data is an array
+      setCars(Array.isArray(data) ? data : []);
+      setError(null);
     } catch (error) {
       console.error('Error fetching cars:', error);
+      setError('Failed to load cars. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -36,13 +40,15 @@ const Cars = () => {
   };
 
   const filteredCars = cars.filter(car => {
+    // Normalize type for comparison
+    const carType = car.type ? car.type.toLowerCase() : '';
+    const filterType = filters.type.toLowerCase();
     const matchesSearch = car.name ? car.name.toLowerCase().includes(filters.search.toLowerCase()) : true;
-    const matchesType = filters.type === 'all' || (car.type ? car.type === filters.type : true);
+    const matchesType = filterType === 'all' || (carType === filterType);
     const matchesPriceRange = filters.priceRange === 'all' || 
       (filters.priceRange === 'low' && car.rentPerHour <= 1000) ||
       (filters.priceRange === 'medium' && car.rentPerHour > 1000 && car.rentPerHour <= 2000) ||
       (filters.priceRange === 'high' && car.rentPerHour > 2000);
-
     return matchesSearch && matchesType && matchesPriceRange;
   });
 
@@ -60,6 +66,12 @@ const Cars = () => {
       </div>
 
       <div className="container py-5">
+        {/* Error State */}
+        {error && (
+          <div className="alert alert-danger text-center" role="alert">
+            {error}
+          </div>
+        )}
         {/* Filters */}
         <div className="row mb-5">
           <div className="col-md-4 mb-3">
@@ -120,13 +132,13 @@ const Cars = () => {
         ) : (
           <div className="row g-4">
             {filteredCars.map((car) => (
-              <div key={car._id} className="col-md-6 col-lg-4">
+              <div key={car._id || car.id || Math.random()} className="col-md-6 col-lg-4">
                 <div className="card h-100 border-0 shadow-sm hover-lift">
                   <div className="position-relative">
                     <img
-                      src={car.image || 'https://via.placeholder.com/300x200?text=Car+Image'}
+                      src={car.image && car.image.trim() !== '' ? car.image : 'https://via.placeholder.com/300x200?text=Car+Image'}
                       className="card-img-top"
-                      alt={car.name}
+                      alt={car.name || 'Car Image'}
                       style={{ height: '200px', objectFit: 'cover' }}
                     />
                     <div className="position-absolute top-0 end-0 p-3">
@@ -135,32 +147,33 @@ const Cars = () => {
                         car.availabilityStatus === 'In Service' ? 'bg-warning' :
                         'bg-danger'
                       }`}>
-                        {car.availabilityStatus}
+                        {car.availabilityStatus || 'Unknown'}
                       </span>
                     </div>
                   </div>
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h5 className="card-title mb-0">{car.name}</h5>
+                      <h5 className="card-title mb-0">{car.name || 'Unnamed Car'}</h5>
                       <span className="badge" style={{
                         background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
                         color: '#000'
-                      }}>₹{car.rentPerHour}/hr</span>
+                      }}>₹{car.rentPerHour !== undefined ? car.rentPerHour : '--'}/hr</span>
                     </div>
                     <div className="mb-3">
                       <small className="text-muted">
-                        <i className="bi bi-fuel-pump me-2"></i>{car.fuelType}
-                        <i className="bi bi-people ms-3 me-2"></i>{car.capacity} Seats
+                        <i className="bi bi-fuel-pump me-2"></i>{car.fuelType || 'N/A'}
+                        <i className="bi bi-people ms-3 me-2"></i>{car.capacity !== undefined ? car.capacity : '--'} Seats
                       </small>
                     </div>
                     <button
-                      onClick={() => navigate(`/booking/${car._id}`)}
+                      onClick={() => navigate(`/booking/${car._id || car.id}`)}
                       className="btn w-100"
                       style={{
                         background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                         color: 'white',
                         border: 'none'
                       }}
+                      disabled={!car._id && !car.id}
                     >
                       Book Now
                     </button>

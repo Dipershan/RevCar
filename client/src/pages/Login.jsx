@@ -18,9 +18,10 @@ const Login = () => {
       // Save token and user info in Redux
       dispatch(loginSuccess({ user: res.data.user, token: res.data.token }));
 
-      // Also optionally store in localStorage
+      // Also store in localStorage as backup
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("isAdmin", res.data.user.isAdmin);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
       // Redirect based on role
       if (res.data.user.isAdmin) {

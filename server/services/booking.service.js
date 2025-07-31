@@ -77,8 +77,49 @@ const getAllBookings = async () => {
 };
 
 const createBooking = async (bookingData) => {
-  const newBooking = new Booking(bookingData);
-  return await newBooking.save();
+  try {
+    const { car, bookedTimeSlots, user, totalHours, totalAmount, transactionId, driverRequired, status } = bookingData;
+
+    console.log("Creating booking with data:", bookingData);
+
+    // Check if car exists
+    const carToUpdate = await Car.findById(car);
+    if (!carToUpdate) throw new Error("Car not found");
+
+    // Create the booking
+    const newBooking = new Booking({
+      user,
+      car,
+      bookedTimeSlots,
+      totalHours,
+      totalAmount,
+      transactionId,
+      driverRequired,
+      status
+    });
+
+    console.log("Saving booking:", newBooking);
+
+    await newBooking.save();
+
+    // Update car's booked time slots
+    carToUpdate.bookedTimeSlots = [
+      ...carToUpdate.bookedTimeSlots,
+      bookedTimeSlots
+    ].filter((slot, index, array) => 
+      array.findIndex(s => s.from === slot.from && s.to === slot.to) === index
+    );
+
+    console.log("Updated car booked time slots:", carToUpdate.bookedTimeSlots);
+
+    await carToUpdate.save();
+
+    console.log("Booking created successfully:", newBooking._id);
+    return newBooking;
+  } catch (error) {
+    console.error("Error in createBooking:", error);
+    throw error;
+  }
 };
 module.exports = {
   bookCar,

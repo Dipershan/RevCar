@@ -21,7 +21,7 @@ const MyBookings = () => {
   const fetchBookings = async () => {
     try {
       const response = await axios.get('/api/bookings/my-bookings');
-      setBookings(response.data);
+      setBookings(response.data.bookings);
     } catch (error) {
       setError('Error fetching bookings');
       console.error('Error:', error);
@@ -60,16 +60,16 @@ const MyBookings = () => {
       <h2 className="mb-4">My Bookings</h2>
       {error && <Alert variant="danger">{error}</Alert>}
 
-      {bookings.length === 0 ? (
+      {Array.isArray(bookings) && bookings.length === 0 ? (
         <Alert variant="info">No bookings found</Alert>
-      ) : (
+      ) : Array.isArray(bookings) ? (
         <Row xs={1} md={2} className="g-4">
           {bookings.map((booking) => (
             <Col key={booking._id}>
               <Card>
                 <Card.Body>
                   <Card.Title>
-                    {booking.vehicle.make} {booking.vehicle.model}
+                    {booking.car?.name || "Unknown Car"}
                     <Badge
                       bg={getStatusBadgeVariant(booking.status)}
                       className="ms-2"
@@ -78,31 +78,25 @@ const MyBookings = () => {
                     </Badge>
                   </Card.Title>
                   <Card.Text>
-                    <strong>Dates:</strong>
+                    <strong>From:</strong> {new Date(booking.bookedTimeSlots?.from).toLocaleDateString()} -{' '}
+                    {new Date(booking.bookedTimeSlots?.to).toLocaleDateString()}
                     <br />
-                    {new Date(booking.startDate).toLocaleDateString()} -{' '}
-                    {new Date(booking.endDate).toLocaleDateString()}
+                    <strong>Total Hours:</strong> {booking.totalHours}
                     <br />
-                    <strong>Pickup:</strong> {booking.pickupLocation}
+                    <strong>Total Amount:</strong> ₹{booking.totalAmount}
                     <br />
-                    <strong>Drop-off:</strong> {booking.dropoffLocation}
+                    <strong>Driver Required:</strong> {booking.driverRequired ? "Yes" : "No"}
                     <br />
-                    <strong>Total Cost:</strong> ${booking.totalCost}
-                    <br />
-                    {booking.additionalServices?.length > 0 && (
-                      <>
-                        <strong>Additional Services:</strong>
-                        <ul>
-                          {booking.additionalServices.map((service) => (
-                            <li key={service}>
-                              {service.charAt(0).toUpperCase() + service.slice(1)}
-                            </li>
-                          ))}
-                        </ul>
-                      </>
+                    {booking.car?.image && (
+                      <img
+                        src={booking.car.image}
+                        alt={booking.car.name}
+                        className="img-fluid mt-2"
+                        style={{ height: '150px', objectFit: 'cover' }}
+                      />
                     )}
                   </Card.Text>
-                  {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                  {booking.status !== 'cancelled' && (
                     <Button
                       variant="danger"
                       onClick={() => handleCancelBooking(booking._id)}
@@ -115,6 +109,8 @@ const MyBookings = () => {
             </Col>
           ))}
         </Row>
+      ) : (
+        <Alert variant="danger">Invalid bookings data.</Alert>
       )}
     </Container>
   );

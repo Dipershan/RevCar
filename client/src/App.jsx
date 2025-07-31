@@ -7,6 +7,7 @@ import MyBookings from './components/MyBookings';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import BookingCar from './pages/BookingCar';
 import SOSModal from './components/SOSButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -44,6 +45,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/cars" element={<Cars />} />
         <Route path="/bookings" element={<MyBookings />} />
+        <Route path="/booking/:carid" element={<BookingCar />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

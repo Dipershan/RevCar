@@ -5,6 +5,7 @@ const { protect, adminOnly } = require('../middlewares/authMiddleware');
 
 // Protected routes (user)
 router.post('/', protect, bookingController.createBooking);
+router.post('/add', protect, bookingController.addBooking);
 router.get('/my-bookings', protect, bookingController.getUserBookings);
 router.get('/:id', protect, bookingController.getBooking);
 router.post('/:id/cancel', protect, bookingController.cancelBooking);

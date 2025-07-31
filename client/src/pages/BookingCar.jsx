@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axios from '../api/axiosInstance';
 
 const BookingCar = () => {
   const { carid } = useParams();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
   const [car, setCar] = useState(null);
   const [fromTime, setFromTime] = useState("");
   const [toTime, setToTime] = useState("");
@@ -62,7 +64,6 @@ const BookingCar = () => {
 
   const handlePaymentSuccess = async (response) => {
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
       if (!user) {
         alert("User not logged in");
         return;
@@ -77,7 +78,6 @@ const BookingCar = () => {
       const totalHours = (end - start) / (1000 * 60 * 60);
       
       const bookingData = {
-        user: user._id || user.id,
         car: car._id,
         bookedTimeSlots: {
           from: fullFromTime,
@@ -87,17 +87,18 @@ const BookingCar = () => {
         totalAmount: amount,
         transactionId: response.reference,
         driverRequired,
-        status: "Confirmed"
+        status: "confirmed"
       };
       
       console.log("Booking data sending to backend:", bookingData);
       
       await axios.post("/api/bookings/add", bookingData);
       alert("Booking successful!");
-      navigate("/userbookings");
+      navigate("/bookings");
     } catch (error) {
       console.error("Booking failed:", error.response?.data || error.message);
-      alert("Booking failed after payment.");
+      console.error("Full error:", error);
+      alert(`Booking failed after payment: ${error.response?.data?.message || error.message}`);
     }
   };
 

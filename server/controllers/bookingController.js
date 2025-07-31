@@ -2,6 +2,51 @@ const Booking = require('../models/booking.model');
 const Vehicle = require('../models/car.model');
 const User = require('../models/user.model');
 const moment = require('moment');
+const bookingService = require('../services/booking.service');
+
+// Add booking (for frontend compatibility)
+exports.addBooking = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const {
+      car,
+      bookedTimeSlots,
+      totalHours,
+      totalAmount,
+      transactionId,
+      driverRequired,
+      status
+    } = req.body;
+
+    console.log("Received booking data:", {
+      userId,
+      car,
+      bookedTimeSlots,
+      totalHours,
+      totalAmount,
+      transactionId,
+      driverRequired,
+      status
+    });
+
+    const bookingData = {
+      user: userId,
+      car,
+      bookedTimeSlots,
+      totalHours,
+      totalAmount,
+      transactionId,
+      driverRequired,
+      status
+    };
+
+    const newBooking = await bookingService.createBooking(bookingData);
+    res.status(201).json({ success: true, booking: newBooking });
+  } catch (err) {
+    console.error("Error creating booking:", err);
+    res.status(500).json({ message: err.message || "Server error" });
+  }
+};
 
 // Create new booking
 exports.createBooking = async (req, res) => {
@@ -89,11 +134,11 @@ exports.createBooking = async (req, res) => {
 exports.getUserBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user._id })
-      .populate('vehicle')
+      .populate('car')
       .sort({ createdAt: -1 });
-    res.json(bookings);
+    res.status(200).json({ success: true, bookings });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -101,7 +146,7 @@ exports.getUserBookings = async (req, res) => {
 exports.getBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id)
-      .populate('vehicle')
+      .populate('car')
       .populate('user', '-password');
     
     if (!booking) {
@@ -131,13 +176,13 @@ exports.updateBookingStatus = async (req, res) => {
 
     booking.status = status;
     
-    // If status is completed, update vehicle availability
+    // If status is completed, update car availability
     if (status === 'completed') {
-      await Vehicle.findByIdAndUpdate(booking.vehicle, { availability: true });
+      await Vehicle.findByIdAndUpdate(booking.car, { availabilityStatus: 'Available' });
     }
-    // If status is confirmed, update vehicle availability
+    // If status is confirmed, update car availability
     else if (status === 'confirmed') {
-      await Vehicle.findByIdAndUpdate(booking.vehicle, { availability: false });
+      await Vehicle.findByIdAndUpdate(booking.car, { availabilityStatus: 'Booked' });
     }
 
     const updatedBooking = await booking.save();
@@ -164,8 +209,8 @@ exports.cancelBooking = async (req, res) => {
     booking.status = 'cancelled';
     await booking.save();
 
-    // Update vehicle availability
-    await Vehicle.findByIdAndUpdate(booking.vehicle, { availability: true });
+    // Update car availability
+    await Vehicle.findByIdAndUpdate(booking.car, { availabilityStatus: 'Available' });
 
     res.json({ message: 'Booking cancelled successfully' });
   } catch (error) {

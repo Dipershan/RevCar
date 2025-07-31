@@ -6,52 +6,36 @@ const bookingSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  vehicle: {
+  car: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vehicle',
+    ref: 'Car',
     required: true,
   },
-  startDate: {
-    type: Date,
-    required: true,
+  bookedTimeSlots: {
+    from: { type: String, required: true },
+    to: { type: String, required: true }
   },
-  endDate: {
-    type: Date,
-    required: true,
-  },
-  pickupLocation: {
-    type: String,
-    required: true,
-  },
-  dropoffLocation: {
-    type: String,
-    required: true,
-  },
-  totalCost: {
+  totalHours: {
     type: Number,
     required: true,
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+  },
+  transactionId: {
+    type: String,
+    required: true,
+  },
+  driverRequired: {
+    type: Boolean,
+    default: false,
   },
   status: {
     type: String,
     enum: ['pending', 'confirmed', 'ongoing', 'completed', 'cancelled'],
-    default: 'pending',
+    default: 'confirmed',
   },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'paid', 'refunded'],
-    default: 'pending',
-  },
-  paymentDetails: {
-    method: String,
-    transactionId: String,
-    paidAmount: Number,
-    paidAt: Date
-  },
-  additionalServices: [{
-    type: String,
-    enum: ['insurance', 'gps', 'childSeat', 'additionalDriver']
-  }],
-  bookingNotes: String,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -60,7 +44,7 @@ const bookingSchema = new mongoose.Schema({
 
 // Add indexes for common queries
 bookingSchema.index({ user: 1, status: 1 });
-bookingSchema.index({ vehicle: 1, startDate: 1, endDate: 1 });
+bookingSchema.index({ car: 1, 'bookedTimeSlots.from': 1, 'bookedTimeSlots.to': 1 });
 
 const Booking = mongoose.model('Booking', bookingSchema);
 module.exports = Booking; 

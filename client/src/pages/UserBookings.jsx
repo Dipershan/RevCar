@@ -52,11 +52,11 @@ const UserBookings = () => {
           <div className="alert alert-danger" role="alert">
             {error}
           </div>
-        ) : bookings.length === 0 ? (
+        ) : Array.isArray(bookings) && bookings.length === 0 ? (
           <div className="text-center">
             <p className="text-muted">No bookings found.</p>
           </div>
-        ) : (
+        ) : Array.isArray(bookings) ? (
           <div className="row">
             {bookings.map((booking) => (
               <div key={booking._id} className="col-md-6 mb-4">
@@ -104,6 +104,10 @@ const UserBookings = () => {
                 </div>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className="alert alert-danger" role="alert">
+            Invalid bookings data.
           </div>
         )}
       </div>

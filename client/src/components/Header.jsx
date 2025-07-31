@@ -1,12 +1,15 @@
 // import axios from '../api/axiosInstance';
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from "react-router-dom"; 
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice"; 
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const [scrolled, setScrolled] = useState(false);
-  const user = JSON.parse(localStorage.getItem('user'));
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,7 +21,7 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    dispatch(logout());
     navigate('/login');
   };
 
@@ -67,7 +70,7 @@ const Header = () => {
               { path: '/', label: 'Home' },
               { path: '/blog', label: 'Blog' },
               { path: '/contact', label: 'Contact' },
-              ...(user ? [{ path: '/userbookings', label: 'My Bookings' }] : []),
+              ...(user ? [{ path: '/bookings', label: 'My Bookings' }] : []),
               ...(user?.isAdmin ? [{ path: '/admin', label: 'Admin' }] : [])
             ].map((item) => (
               <li className="nav-item" key={item.path}>

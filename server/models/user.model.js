@@ -25,6 +25,30 @@ const UserSchema =  mongoose.Schema({
     isAdmin: { 
         type: Boolean, 
         default: false 
+    },
+    profilePicture: {
+        type: String, // file path or URL
+        default: ''
+    },
+    phoneNumber: {
+        type: String,
+        default: ''
+    },
+    driverLicense: {
+        type: String, // file path or URL
+        default: ''
+    },
+    idCard: {
+        type: String, // file path or URL
+        default: ''
+    },
+    resetPasswordToken: {
+        type: String,
+        default: undefined
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: undefined
     }
    
 },{ timestamps: true}

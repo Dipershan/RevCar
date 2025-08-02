@@ -2,8 +2,12 @@ const router = require("express").Router();
 const carController = require("../controllers/car.controller");
 const { authenticateUser, requireAdmin } = require("../middlewares/authenticateUser");
 
-// Public route for getting all cars (no authentication required)
+// Public routes for searching and browsing cars (no authentication required)
 router.get("/getallcars", carController.getAllCars);
+router.get("/search", carController.searchCars);
+router.get("/locations", carController.getLocations);
+router.get("/types", carController.getCarTypes);
+router.get("/features", carController.getFeatures);
 
 //admin
 router.post("/addcar", authenticateUser, requireAdmin, carController.addCar);

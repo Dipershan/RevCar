@@ -29,6 +29,18 @@ exports.addBooking = async (req, res) => {
       status
     });
 
+    // Check if car exists and is available
+    const carToCheck = await Vehicle.findById(car);
+    if (!carToCheck) {
+      return res.status(404).json({ message: 'Car not found' });
+    }
+
+    if (carToCheck.availabilityStatus !== 'Available') {
+      return res.status(400).json({ 
+        message: `Car is not available for booking. Current status: ${carToCheck.availabilityStatus}` 
+      });
+    }
+
     const bookingData = {
       user: userId,
       car,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 import AdminLayout from '../../components/AdminLayout';
 
 const AdminUserList = () => {
@@ -10,7 +10,7 @@ const AdminUserList = () => {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('/api/users/listUsers', {
+      const res = await axiosInstance.get('/api/users/listUsers', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,16 +28,18 @@ const AdminUserList = () => {
     try {
       const token = localStorage.getItem('token'); // ✅ Get admin token
 
-      const res = await axios.delete(`/api/users/delete/${userId}`, {
+      const res = await axiosInstance.delete(`/api/users/delete/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // ✅ Attach the token
         },
       });
 
       console.log('User deleted:', res.data);
-      // optionally refresh list or remove from state
+      // Refresh the user list after deletion
+      fetchUsers();
     } catch (error) {
       console.error('Failed to delete user:', error);
+      alert('Failed to delete user');
     }
   };
 

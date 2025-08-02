@@ -24,6 +24,11 @@ const bookCar = async (data) => {
     const carToUpdate = await Car.findById(car).session(session);
     if (!carToUpdate) throw new Error("Car not found");
 
+    // Check if car is available for booking
+    if (carToUpdate.availabilityStatus !== 'Available') {
+      throw new Error(`Car is not available for booking. Current status: ${carToUpdate.availabilityStatus}`);
+    }
+
     const newBooking = new Booking({
       user,
       car,
@@ -85,6 +90,11 @@ const createBooking = async (bookingData) => {
     // Check if car exists
     const carToUpdate = await Car.findById(car);
     if (!carToUpdate) throw new Error("Car not found");
+
+    // Check if car is available for booking
+    if (carToUpdate.availabilityStatus !== 'Available') {
+      throw new Error(`Car is not available for booking. Current status: ${carToUpdate.availabilityStatus}`);
+    }
 
     // Create the booking
     const newBooking = new Booking({

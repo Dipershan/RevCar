@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
+import Header from './components/Header';
 import Home from './pages/Home';
 import Cars from './pages/Cars';
 import MyBookings from './components/MyBookings';
@@ -11,33 +12,39 @@ import BookingCar from './pages/BookingCar';
 import SOSModal from './components/SOSButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import AdminHome from './pages/admin/AdminHome';
+import AddCar from './pages/admin/AddCar';
+import EditCar from './pages/admin/EditCar';
+import AdminUserList from './pages/admin/AdminUserList';
+import UserProfile from './pages/UserProfile';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
-function App() {
+function AppContent() {
   const [showSosModal, setShowSosModal] = useState(false);
+  const location = useLocation();
+  
+  // Hide header on login, register, forgot-password, reset-password, and admin pages
+  const hideHeaderPaths = ['/login', '/register', '/forgot-password', '/admin'];
+  const shouldHideHeader = hideHeaderPaths.some(path => location.pathname.startsWith(path));
+
+  // Manage body class for padding
+  useEffect(() => {
+    if (shouldHideHeader) {
+      document.body.classList.add('no-header');
+    } else {
+      document.body.classList.remove('no-header');
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.classList.remove('no-header');
+    };
+  }, [shouldHideHeader]);
 
   return (
-    <Router>
-      <Navbar bg="dark" variant="dark" expand="lg" sticky="top">
-        <Container>
-          <Navbar.Brand as={Link} to="/">RevCar</Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} to="/">Home</Nav.Link>
-              <Nav.Link as={Link} to="/cars">Cars</Nav.Link>
-              <Nav.Link as={Link} to="/bookings">My Bookings</Nav.Link>
-              <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
-            </Nav>
-            <Nav>
-              <Button variant="danger" onClick={() => setShowSosModal(true)} className="me-2">
-                SOS
-              </Button>
-              <Nav.Link as={Link} to="/login">Login</Nav.Link>
-              <Nav.Link as={Link} to="/register">Register</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+    <>
+      {!shouldHideHeader && <Header onSOSClick={() => setShowSosModal(true)} />}
       
       <SOSModal show={showSosModal} handleClose={() => setShowSosModal(false)} />
 
@@ -49,7 +56,24 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<UserProfile />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminHome />} />
+        <Route path="/admin/addcar" element={<AddCar />} />
+        <Route path="/admin/editcar/:carId" element={<EditCar />} />
+        <Route path="/admin/users" element={<AdminUserList />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

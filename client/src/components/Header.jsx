@@ -4,7 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/authSlice"; 
 
-const Header = () => {
+const Header = ({ onSOSClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -30,36 +30,41 @@ const Header = () => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg fixed-top transition-all ${
-      scrolled ? 'navbar-light bg-white shadow-lg' : 'navbar-dark bg-transparent'
-    }`}
+    <nav className={`navbar navbar-expand-lg fixed-top ${scrolled ? 'navbar-light bg-white shadow-lg' : 'navbar-dark'}`}
     style={{
       transition: 'all 0.3s ease-in-out',
-      padding: scrolled ? '0.5rem 0' : '1rem 0'
+      padding: scrolled ? '0.5rem 0' : '0.75rem 0',
+      background: scrolled ? 'rgba(255, 255, 255, 0.98)' : 'rgba(30, 60, 114, 0.95)',
+      backdropFilter: 'blur(10px)',
+      borderBottom: scrolled ? '1px solid rgba(0,0,0,0.1)' : 'none'
     }}>
       <div className="container">
         <Link 
           className="navbar-brand d-flex align-items-center" 
           to="/"
           style={{
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            background: scrolled ? 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)' : 'white',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            transition: 'all 0.3s ease'
+            fontSize: '1.6rem',
+            fontWeight: '800',
+            color: scrolled ? '#1e3c72' : 'white',
+            textDecoration: 'none',
+            transition: 'all 0.3s ease',
+            letterSpacing: '-0.5px'
           }}
         >
           <i className={`bi bi-car-front-fill me-2 ${scrolled ? 'text-primary' : 'text-white'}`}
-             style={{ WebkitTextFillColor: scrolled ? '' : 'white' }}></i>
+             style={{ 
+               fontSize: '1.4rem',
+               WebkitTextFillColor: scrolled ? '#1e3c72' : 'white'
+             }}></i>
           RevCar
         </Link>
         
         <button 
-          className={`navbar-toggler ${scrolled ? '' : 'border-white'}`}
+          className={`navbar-toggler ${scrolled ? 'border-dark' : 'border-white'}`}
           type="button" 
           data-bs-toggle="collapse" 
           data-bs-target="#navbarNav"
+          style={{ borderWidth: '2px' }}
         >
           <span className={`navbar-toggler-icon ${scrolled ? '' : 'text-white'}`}></span>
         </button>
@@ -68,9 +73,10 @@ const Header = () => {
           <ul className="navbar-nav ms-auto align-items-center">
             {[
               { path: '/', label: 'Home' },
-              { path: '/blog', label: 'Blog' },
+              { path: '/cars', label: 'Cars' },
               { path: '/contact', label: 'Contact' },
               ...(user ? [{ path: '/bookings', label: 'My Bookings' }] : []),
+              ...(user ? [{ path: '/profile', label: 'Profile' }] : []),
               ...(user?.isAdmin ? [{ path: '/admin', label: 'Admin' }] : [])
             ].map((item) => (
               <li className="nav-item" key={item.path}>
@@ -79,16 +85,21 @@ const Header = () => {
                   to={item.path}
                   style={{
                     color: scrolled ? '#1e3c72' : 'white',
-                    fontWeight: '500'
+                    fontWeight: '500',
+                    fontSize: '0.95rem',
+                    transition: 'all 0.3s ease',
+                    position: 'relative'
                   }}
                 >
                   {item.label}
                   {isActive(item.path) && (
                     <span 
-                      className="position-absolute bottom-0 start-0 w-100"
+                      className="position-absolute bottom-0 start-50 translate-middle-x"
                       style={{
                         height: '2px',
+                        width: '60%',
                         background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
+                        borderRadius: '2px',
                         transition: 'all 0.3s ease'
                       }}
                     ></span>
@@ -99,37 +110,59 @@ const Header = () => {
             
             {user ? (
               <li className="nav-item dropdown ms-3">
-                <a 
+                <button 
                   className={`nav-link dropdown-toggle d-flex align-items-center ${scrolled ? 'text-dark' : 'text-white'}`}
-                  href="#" 
-                  role="button" 
+                  type="button"
                   data-bs-toggle="dropdown"
-                  style={{ fontWeight: '500' }}
+                  style={{ 
+                    fontWeight: '500', 
+                    cursor: 'pointer', 
+                    background: 'none', 
+                    border: 'none',
+                    fontSize: '0.95rem',
+                    padding: '0.4rem 0.8rem',
+                    borderRadius: '50px',
+                    transition: 'all 0.3s ease'
+                  }}
                 >
                   <div 
                     className="rounded-circle me-2 d-flex align-items-center justify-content-center"
                     style={{
-                      width: '35px',
-                      height: '35px',
+                      width: '32px',
+                      height: '32px',
                       background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
-                      color: '#1e3c72'
+                      color: '#1e3c72',
+                      fontWeight: '600',
+                      fontSize: '0.9rem',
+                      boxShadow: '0 2px 8px rgba(0, 255, 135, 0.3)'
                     }}
                   >
                     {user.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
-                  {user.name || 'Profile'}
-                </a>
-                <ul className="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2">
+                  <span style={{ fontWeight: '500' }}>{user.name || 'Profile'}</span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2" style={{ borderRadius: '12px', minWidth: '180px' }}>
                   <li>
-                    <Link className="dropdown-item py-2" to="/profile">
+                    <Link className="dropdown-item py-2 px-3" to="/profile" style={{ borderRadius: '12px 12px 0 0' }}>
                       <i className="bi bi-person me-2"></i>Profile
                     </Link>
                   </li>
-                  <li><hr className="dropdown-divider" /></li>
                   <li>
                     <button 
-                      className="dropdown-item py-2 text-danger" 
+                      className="dropdown-item py-2 px-3 text-danger" 
+                      onClick={onSOSClick}
+                      style={{ fontWeight: '500' }}
+                    >
+                      <i className="bi bi-exclamation-triangle me-2"></i>
+                      SOS Emergency
+                    </button>
+                  </li>
+                  <li><hr className="dropdown-divider my-1" /></li>
+                  <li>
+                    <button 
+                      className="dropdown-item py-2 px-3 text-danger" 
                       onClick={handleLogout}
+                      style={{ borderRadius: '0 0 12px 12px', fontWeight: '500' }}
                     >
                       <i className="bi bi-box-arrow-right me-2"></i>
                       Logout
@@ -143,21 +176,29 @@ const Header = () => {
                   <Link 
                     className={`nav-link ${scrolled ? 'text-dark' : 'text-white'}`}
                     to="/login"
-                    style={{ fontWeight: '500' }}
+                    style={{ 
+                      fontWeight: '500',
+                      fontSize: '0.95rem',
+                      padding: '0.4rem 1.2rem',
+                      borderRadius: '50px',
+                      transition: 'all 0.3s ease'
+                    }}
                   >
                     Login
                   </Link>
                 </li>
-                <li className="nav-item ms-3">
+                <li className="nav-item ms-2">
                   <Link 
-                    className="nav-link btn px-4 py-2"
+                    className="nav-link btn px-3 py-2"
                     to="/register"
                     style={{
                       background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
                       color: '#1e3c72',
                       fontWeight: '600',
                       borderRadius: '50px',
-                      transition: 'all 0.3s ease'
+                      transition: 'all 0.3s ease',
+                      fontSize: '0.95rem',
+                      boxShadow: '0 2px 8px rgba(0, 255, 135, 0.3)'
                     }}
                   >
                     Register

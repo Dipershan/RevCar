@@ -4,7 +4,7 @@ import axios from '../../api/axiosInstance';
 import AdminLayout from '../../components/AdminLayout'; // Optional if you're using a layout wrapper
 
 const EditCar = () => {
-  const { carid } = useParams();
+  const { carId } = useParams();
   const [carData, setCarData] = useState({
     name: '',
     image: '',
@@ -20,7 +20,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem('token'); // ✅ Get token
 
-      const res = await axios.get(`/api/cars/getcar/${carid}`, {
+      const res = await axios.get(`/api/cars/getcar/${carId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // ✅ Include token
         },
@@ -40,7 +40,7 @@ useEffect(() => {
   };
 
   fetchCar();
-}, [carid]);
+}, [carId]);
 
 
   const handleChange = (e) => {
@@ -52,7 +52,7 @@ const handleDelete = async () => {
 
     const response = await axios.post(
       '/api/cars/deletecar',
-      { carId: carid }, 
+      { carId: carId }, 
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ const handleDelete = async () => {
       const token = localStorage.getItem('token');
       await axios.post(
         '/api/cars/editcar',
-        { ...carData, _id: carid },
+        { ...carData, _id: carId },
         {
           headers: {
             Authorization: `Bearer ${token}`,

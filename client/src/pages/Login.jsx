@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosInstance";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/authSlice";
@@ -36,37 +36,50 @@ const Login = () => {
   };
 
   return (
-    <div className="login-background d-flex justify-content-center align-items-center vh-100">
-      <div className="card login-card text-light">
-        <div className="card-body">
-          <h3 className="card-title text-center mb-4">Login</h3>
-          <form onSubmit={handleLogin}>
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+    <div className="login-page">
+      <div className="login-background">
+        <div className="login-overlay"></div>
+        <div className="login-container">
+          <div className="login-card">
+            <div className="login-header">
+              <h2 className="login-title">Welcome Back</h2>
+              <p className="login-subtitle">Sign in to your RevCar account</p>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <button type="submit" className="login-btn">
+                Sign In
+              </button>
+            </form>
+            <div className="login-footer">
+              <Link to="/forgot-password" className="forgot-link">
+                Forgot Password?
+              </Link>
+              <div className="register-link">
+                Don't have an account? <Link to="/register">Sign Up</Link>
+              </div>
             </div>
-            <button type="submit" className="btn btn-danger w-100">Login</button>
-          </form>
-          <div className="text-center mt-3">
-            <a href="/register" className="text-light text-decoration-none">Click Here to Register</a>
           </div>
         </div>
       </div>
